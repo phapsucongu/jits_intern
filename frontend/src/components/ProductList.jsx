@@ -1,5 +1,5 @@
 
-export default function ProductList({ products }) {
+export default function ProductList({ products, onEdit, onDelete }) {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Product List</h2>
@@ -20,6 +20,20 @@ export default function ProductList({ products }) {
             <div className="p-4">
               <h3 className="text-lg font-medium">{product.name}</h3>
               <p className="mt-2 text-gray-600">Price: {product.price}</p>
+              <div className="mt-4 flex space-x-2">
+                <button
+                  onClick={() => onEdit(product)}
+                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDelete(product.id)}
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}

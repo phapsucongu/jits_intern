@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ProductList from '../components/ProductList';
 import ProductForm from '../components/ProductForm';
 
@@ -24,14 +24,47 @@ export const ProductPage = () => {
     },
   ]);
 
-  const handleAdd = (newProduct) => {
-    setProducts((prev) => [...prev, newProduct]);
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  const handleAdd = (newProd) => {
+    setProducts((prev) => [...prev, newProd]);
+  };
+
+  const handleDelete = (id) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    if (editingProduct?.id === id) {
+      setEditingProduct(null);
+    }
+  };
+
+  const handleEdit = (prod) => {
+    setEditingProduct(prod);
+  };
+
+  const handleUpdate = (updatedProd) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === updatedProd.id ? updatedProd : p))
+    );
+    setEditingProduct(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
   };
 
   return (
-    <>
-      <ProductForm onAdd={handleAdd} />
-      <ProductList products={products} />
-    </>
+    <div>
+      <ProductForm
+        onAdd={handleAdd}
+        onUpdate={handleUpdate}
+        editingProduct={editingProduct}
+        onCancel={handleCancelEdit}
+      />
+      <ProductList
+        products={products}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
+      />
+    </div>
   );
-};
+}
