@@ -12,7 +12,9 @@
  * For more information on configuring datastores, check out:
  * https://sailsjs.com/config/datastores
  */
-
+require('dotenv').config();
+const uri=`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.rhofgao.mongodb.net/jits_intern?retryWrites=true&w=majority&appName=Cluster0`;
+//console.log("MongoDB URI:", uri);
 module.exports.datastores = {
 
 
@@ -48,8 +50,8 @@ module.exports.datastores = {
     *    (See https://sailsjs.com/config/datastores for help.)                 *
     *                                                                          *
     ***************************************************************************/
-    // adapter: 'sails-mysql',
-    // url: 'mysql://user:password@host:port/database',
+    adapter: require('sails-mongo'),
+    url: uri,
 
   },
 

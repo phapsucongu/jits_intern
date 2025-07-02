@@ -1,39 +1,44 @@
-import { useState } from 'react';
+// src/pages/ProductPage.jsx
+import React, { useState, useEffect } from 'react';
+import api from '../api';            // or import axios from 'axios';
 import ProductList from '../components/ProductList';
 import ProductForm from '../components/ProductForm';
 
-export const ProductPage = () => {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: 'Product A',
-      price: '$19.99',
-      image: 'https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png',
-    },
-    {
-      id: 2,
-      name: 'Product B',
-      price: '$29.99',
-      image: 'https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png',
-    },
-    {
-      id: 3,
-      name: 'Product C',
-      price: '$39.99',
-      image: 'https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png',
-    },
-  ]);
-
+export default function ProductPage() {
+  const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleAdd = (newProd) => {
-    setProducts((prev) => [...prev, newProd]);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await api.get('/products');
+        setProducts(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  const handleAdd = async (newProd) => {
+    try {
+      const res = await api.post('/products', newProd);
+      setProducts(prev => [...prev, res.data]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleDelete = (id) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    if (editingProduct?.id === id) {
-      setEditingProduct(null);
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/products/${id}`);
+      setProducts(prev => prev.filter(p => p.id !== id));
+      if (editingProduct?.id === id) setEditingProduct(null);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -41,24 +46,32 @@ export const ProductPage = () => {
     setEditingProduct(prod);
   };
 
-  const handleUpdate = (updatedProd) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === updatedProd.id ? updatedProd : p))
-    );
+  const handleUpdate = async (updatedProd) => {
+    try {
+      const res = await api.put(`/products/${updatedProd.id}`, updatedProd);
+      setProducts(prev =>
+        prev.map(p => (p.id === res.data.id ? res.data : p))
+      );
+      setEditingProduct(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 6) Hủy edit
+  const handleCancel = () => {
     setEditingProduct(null);
   };
 
-  const handleCancelEdit = () => {
-    setEditingProduct(null);
-  };
+  if (loading) return <div>Đang tải sản phẩm…</div>;
 
   return (
-    <div>
+    <div className="p-6 space-y-6">
       <ProductForm
         onAdd={handleAdd}
         onUpdate={handleUpdate}
         editingProduct={editingProduct}
-        onCancel={handleCancelEdit}
+        onCancel={handleCancel}
       />
       <ProductList
         products={products}
