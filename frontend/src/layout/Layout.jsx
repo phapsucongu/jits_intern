@@ -1,6 +1,5 @@
-import React from 'react';
-
-export const CMSLayout = ({ children }) => {
+import { Routers } from "../routes/Routers";
+export const Layout = () => {
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-blue-600 text-white h-16 flex items-center px-6">
@@ -16,7 +15,9 @@ export const CMSLayout = ({ children }) => {
           </nav>
         </aside>
         <div className="flex-1 bg-amber-50 p-6 ">
-          {children}
+          <main>
+            <Routers/>
+          </main>
         </div>
       </div>
     </div>
