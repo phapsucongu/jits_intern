@@ -17,7 +17,7 @@ export const Layout = () => {
     return (
         <div className="flex flex-col h-screen">
         <header className="bg-blue-600 text-white h-16 flex items-center px-6 justify-between">
-            <h1 className="text-xl">My CMS</h1>
+            <h1 className="text-xl py-3">My CMS</h1>
             <button
             onClick={toggleTheme}
             className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-950"
