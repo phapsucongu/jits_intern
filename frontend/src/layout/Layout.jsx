@@ -20,7 +20,7 @@ export const Layout = () => {
             <aside className="bg-gray-800 text-gray-200 p-4 ">
             <nav className="space-y-2">
                 <a href="/" className="block px-3 py-2 rounded hover:bg-gray-700">Home</a>
-                <a href="/product" className="block px-3 py-2 rounded hover:bg-gray-700">Product</a>
+                <a href="/products" className="block px-3 py-2 rounded hover:bg-gray-700">Product</a>
             </nav>
             </aside>
             <div className="flex-1 bg-amber-50 p-6 ">

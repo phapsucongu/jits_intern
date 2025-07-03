@@ -8,7 +8,7 @@ POST http://localhost:1337/products
 Content-Type: application/json
 
 {
-  "name": "TV",
+  "name": "ABC TV",
   "price": 199.99,
   "image": "https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png"
 }
