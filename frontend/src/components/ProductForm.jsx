@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
-export default function ProductForm({ onAdd, onUpdate, editingProduct, onCancel }) {
+export default function ProductForm({ onSubmit, editingProduct, onCancel }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
 
   useEffect(() => {
     if (editingProduct) {
       setName(editingProduct.name);
-      setPrice(editingProduct.price.replace(/^\$/, ''));
+      setPrice(String(editingProduct.price));
     } else {
       setName('');
       setPrice('');
@@ -16,22 +16,27 @@ export default function ProductForm({ onAdd, onUpdate, editingProduct, onCancel 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !price) return;
+    if (!name.trim() || price === '') return;
 
-    const payload = {
-      id: editingProduct ? editingProduct.id : Date.now(),
-      name,
-      price: `$${parseFloat(price).toFixed(2)}`,
+    const priceNumber = parseFloat(price);
+    if (isNaN(priceNumber)) return;
+
+    const formData = {
+      name: name.trim(),
+      price: priceNumber,
       image: editingProduct
         ? editingProduct.image
         : 'https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png',
     };
 
-    if (editingProduct) {
-      onUpdate(payload);
-    } else {
-      onAdd(payload);
+    if (typeof onSubmit === 'function') {
+      if (editingProduct) {
+        onSubmit({ id: editingProduct.id, ...formData });
+      } else {
+        onSubmit(formData);
+      }
     }
+
     setName('');
     setPrice('');
   };

@@ -1,5 +1,9 @@
-
+import { useNavigate } from 'react-router-dom';
 export default function ProductList({ products, onEdit, onDelete }) {
+  const navigate = useNavigate();
+    if (!products || products.length === 0) {
+        return <div className="text-gray-500">No products available.</div>;
+    }
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Product List</h2>
@@ -22,7 +26,7 @@ export default function ProductList({ products, onEdit, onDelete }) {
               <p className="mt-2 text-gray-600">Price: {product.price}</p>
               <div className="mt-4 flex space-x-2">
                 <button
-                  onClick={() => onEdit(product)}
+                  onClick={() => navigate(`/addproduct/${product.id}`)}
                   className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                 >
                   Edit
