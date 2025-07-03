@@ -1,8 +1,19 @@
 import { Routers } from "../routes/Routers";
 import useTheme from "../hooks/useTheme";
-import React from "react";
+import useLastVisit from "../hooks/useLastVisit";
 export const Layout = () => {
     const { theme, toggleTheme } = useTheme();
+    const lastVisit = useLastVisit();
+    const formattedLastVisit = lastVisit
+    ? lastVisit.toLocaleString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "";
     return (
         <div className="flex flex-col h-screen">
         <header className="bg-blue-600 text-white h-16 flex items-center px-6 justify-between">
@@ -29,6 +40,10 @@ export const Layout = () => {
             </main>
             </div>
         </div>
+        <footer className="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 h-12 flex items-center justify-center">
+            <span>Lần truy cập trước:{" "}</span>
+            <strong className="ml-1">{formattedLastVisit}</strong>
+        </footer>
         </div>
     );
 }
