@@ -14,7 +14,7 @@
  */
 require('dotenv').config();
 const uri=`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.rhofgao.mongodb.net/jits_intern?retryWrites=true&w=majority&appName=Cluster0`;
-//console.log("MongoDB URI:", uri);
+console.log("MongoDB URI:", uri);
 module.exports.datastores = {
 
 

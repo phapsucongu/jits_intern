@@ -1,5 +1,5 @@
 import usePing from '../hooks/usePing';
-export const HomePage = () => {
+export default function HomePage ()  {
     const { data, loading, error } = usePing();
       if (loading) return <div>Loading...</div>;
       if (error) return <div>Error: {error.message}</div>;
