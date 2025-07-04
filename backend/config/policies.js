@@ -18,5 +18,11 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
-
+  'ProductController': {
+    find: 'isAuthenticated',
+    findOne: 'isAuthenticated',
+    create: 'isAuthenticated',
+    update: 'isAuthenticated',
+    destroy: 'isAuthenticated'
+  },
 };
