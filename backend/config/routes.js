@@ -24,16 +24,20 @@ module.exports.routes = {
   'POST /api/auth/products': {
     controller: 'ProductController',
     action: 'create',
-    policy: 'isAuthenticated'
   },
   'PUT /api/auth/products/:id': {
     controller: 'ProductController',
     action: 'update',
-    policy: 'isAuthenticated'
   },
   'DELETE /api/auth/products/:id': {
     controller: 'ProductController',
     action: 'destroy',
-    policy: 'isAuthenticated'
-  }
-};
+  },
+
+  'GET /api/search/products': {
+    controller: 'ProductController',
+    action: 'search',
+  },
+  
+}
+

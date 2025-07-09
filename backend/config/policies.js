@@ -8,6 +8,8 @@
  * https://sailsjs.com/docs/concepts/policies
  */
 
+const { search } = require("../api/controllers/ProductController");
+
 module.exports.policies = {
 
   /***************************************************************************
@@ -23,6 +25,7 @@ module.exports.policies = {
     findOne: 'isAuthenticated',
     create: 'isAuthenticated',
     update: 'isAuthenticated',
-    destroy: 'isAuthenticated'
+    destroy: 'isAuthenticated',
+    search: 'isAuthenticated',
   },
 };

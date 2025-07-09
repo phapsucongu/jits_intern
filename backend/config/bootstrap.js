@@ -27,4 +27,16 @@ module.exports.bootstrap = async function() {
   // ]);
   // ```
 
+  // Initialize searchProducts service
+  try {
+    sails.log.info('Initializing searchProducts service...');
+    const searchProducts = require('../api/services/searchProducts');
+    if (searchProducts.initialize) {
+      await searchProducts.initialize();
+      sails.log.info('searchProducts service initialized successfully');
+    }
+  } catch (error) {
+    sails.log.error('Failed to initialize searchProducts service:', error);
+  }
+
 };

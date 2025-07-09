@@ -5,6 +5,7 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
+    "@elastic/elasticsearch": "^7.17.0",
     "@sailshq/connect-redis": "^6.1.3",
     "@sailshq/lodash": "^3.10.6",
     "@sailshq/socket.io-redis": "^6.1.2",
