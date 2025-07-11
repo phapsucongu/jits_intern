@@ -4,14 +4,14 @@ module.exports = {
   // Lưu vào MongoDB và cố gắng đưa vào ES (nếu có thể)
   create: async (req, res) => {
     try {
-      sails.log.info('Creating product with data:', req.body);
+      // Skip verbose logging
       
       if (!req.body.name || !req.body.price) {
         return res.badRequest({ error: 'Name and price are required fields.' });
       }
 
       const product = await Product.create(req.body).fetch();
-      sails.log.info(`Product created successfully in MongoDB with ID: ${product.id}`);
+      // Skip verbose logging
       let esSuccess = false;
       let esError = null;
       
@@ -47,7 +47,11 @@ module.exports = {
 
 
   search: async (req, res) => {
-    const { keyword, page, limit } = req.query;
+    // Map the name parameter to keyword for searchProducts
+    const { name, page, limit } = req.query;
+    const keyword = name; // Use the name parameter as the keyword
+    // Skip verbose logging
+    
     const result = await searchProducts.searchProducts({ keyword, page, limit });
     return res.json(result);
   },

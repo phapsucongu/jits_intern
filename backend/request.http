@@ -20,8 +20,9 @@ Content-Type: application/json
 
 #########
 
-GET http://localhost:1337/products/6865c5056e0be378d7632507
+GET http://localhost:1337/products
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNTU5NiwiZXhwIjoxNzUyMTA5MTk2fQ.AXfPctR8Q_t4jtQMRgHA12sfJfVar89lmx9x5we1knY
 
 
 #########
@@ -33,3 +34,55 @@ Content-Type: application/json
   "price": 299.99,
   "image": "https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png"
 }
+
+
+#########
+POST http://localhost:1337/api/register
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456"
+}
+
+#########
+POST http://localhost:1337/api/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456"
+}
+
+#########
+GET http://localhost:1337/api/search/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNTU5NiwiZXhwIjoxNzUyMTA5MTk2fQ.AXfPctR8Q_t4jtQMRgHA12sfJfVar89lmx9x5we1knY
+
+#########
+
+POST http://localhost:1337/api/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456"
+}
+
+#########
+
+GET http://localhost:1337/api/search/products?name=TV
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNzI2MSwiZXhwIjoxNzUyMTEwODYxfQ.tHWiTsnyZWX--6VTULYLqAoW5tpMsXEEuf9zgmzaILo
+
+#########
+
+GET http://localhost:1337/api/search/products?name=Smart
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNzI2MSwiZXhwIjoxNzUyMTEwODYxfQ.tHWiTsnyZWX--6VTULYLqAoW5tpMsXEEuf9zgmzaILo
+
+#########
+
+GET http://localhost:1337/api/auth/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjE5NTcyNywiZXhwIjoxNzUyMTk5MzI3fQ.zi2K3iEPCoXhR_C4VqydHwol9EsqxHpZwhuN-K8WGs0

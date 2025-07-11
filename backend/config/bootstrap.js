@@ -11,23 +11,6 @@
 
 module.exports.bootstrap = async function() {
 
-  // By convention, this is a good place to set up fake data during development.
-  //
-  // For example:
-  // ```
-  // // Set up fake development data (or if we already have some, avast)
-  // if (await User.count() > 0) {
-  //   return;
-  // }
-  //
-  // await User.createEach([
-  //   { emailAddress: 'ry@example.com', fullName: 'Ryan Dahl', },
-  //   { emailAddress: 'rachael@example.com', fullName: 'Rachael Shaw', },
-  //   // etc.
-  // ]);
-  // ```
-
-  // Initialize searchProducts service
   try {
     sails.log.info('Initializing searchProducts service...');
     const searchProducts = require('../api/services/searchProducts');
@@ -37,6 +20,25 @@ module.exports.bootstrap = async function() {
     }
   } catch (error) {
     sails.log.error('Failed to initialize searchProducts service:', error);
+  }
+  try {
+    sails.log.info('Initializing elasticsearchSync service for Products...');
+    const elasticsearchSync = require('../api/services/elasticsearchSync');
+    if (elasticsearchSync.initialize) {
+      await elasticsearchSync.initialize();
+      sails.log.info('elasticsearchSync service initialized successfully');
+      
+      setTimeout(async () => {
+        try {
+          sails.log.info('Performing initial sync of all products...');
+          await elasticsearchSync.syncAll('Product');
+        } catch (err) {
+          sails.log.error('Initial product sync failed:', err);
+        }
+      }, 5000);
+    }
+  } catch (error) {
+    sails.log.error('Failed to initialize elasticsearchSync service:', error);
   }
 
 };

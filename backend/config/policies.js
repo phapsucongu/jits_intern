@@ -28,4 +28,8 @@ module.exports.policies = {
     destroy: 'isAuthenticated',
     search: 'isAuthenticated',
   },
+  
+  'SyncController': {
+    '*': 'isAuthenticated'
+  },
 };

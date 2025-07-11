@@ -38,6 +38,11 @@ module.exports.routes = {
     controller: 'ProductController',
     action: 'search',
   },
+  // 'GET /api/sync/status': 'SyncController.getStatus',
+  // 'POST /api/sync/products': 'SyncController.syncProducts',
+  // 'POST /api/sync/all': 'SyncController.syncAll',
+  // 'POST /api/sync/reset': 'SyncController.resetSync',
+  // 'POST /api/sync/rebuild': 'SyncController.rebuildIndex',
   
 }
 

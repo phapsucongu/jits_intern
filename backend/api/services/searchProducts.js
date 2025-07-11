@@ -2,7 +2,6 @@ const { Client } = require('@elastic/elasticsearch');
 
 let client;
 
-// Tạo client Elasticsearch
 const initializeClient = () => {
   try {
     client = new Client({
@@ -21,7 +20,6 @@ const initializeClient = () => {
 };
 
 module.exports = {
-  // Hàm khởi tạo được gọi khi Sails khởi động
   initialize: async function () {
     client = initializeClient();
 
@@ -47,7 +45,6 @@ module.exports = {
     }
   },
 
-  // Hàm tạo sản phẩm vào Elasticsearch
   indexProduct: async (product) => {
     try {
       if (!client) client = initializeClient();
@@ -73,25 +70,39 @@ module.exports = {
     }
   },
 
-  // Hàm tìm kiếm sản phẩm theo từ khóa
   searchProducts: async ({ keyword, page = 1, limit = 10 }) => {
     try {
       if (!client) client = initializeClient();
 
       const from = (page - 1) * limit;
-
+      
+      let searchQuery;
+      
+      if (!keyword) {
+        searchQuery = { match_all: {} };
+      } else {
+        searchQuery = {
+          bool: {
+            must: [
+              {
+                match_phrase_prefix: {
+                  name: {
+                    query: keyword,
+                    slop: 0 
+                  }
+                }
+              }
+            ]
+          }
+        };
+      }
+      
       const result = await client.search({
         index: 'products',
         from,
         size: limit,
         body: {
-          query: {
-            query_string: {
-                query: `*${keyword || ''}*`,
-                fields: ['name^2', 'image'],
-                default_operator: 'AND',
-                }
-            }
+          query: searchQuery
         }
     });
 

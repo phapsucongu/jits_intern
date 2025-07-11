@@ -1,1 +1,55 @@
 @import "tailwindcss";
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --bg-secondary: #f9fafb;
+  --border-color: #e5e7eb;
+}
+
+.dark {
+  --bg-color: #1f2937;
+  --text-color: #f9fafb;
+  --bg-secondary: #111827;
+  --border-color: #374151;
+}
+
+* {
+  transition-property: color, background-color, border-color;
+  transition-duration: 300ms;
+  transition-timing-function: ease;
+}
+
+html, body {
+  min-height: 100vh;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.dark body {
+  background-color: #1f2937 !important;
+}
+
+.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #111827 !important;
+}
+
+.dark .text-gray-900 {
+  color: #f9fafb !important;
+}
+
+.dark #root .bg-white,
+.dark #product-page {
+  background-color: #1f2937 !important;
+}
+
+.dark * {
+  transition: none !important;
+}

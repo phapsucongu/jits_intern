@@ -2,11 +2,30 @@ import { useState, useEffect, useCallback } from 'react';
 
 export default function useTheme() {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+      document.body.style.backgroundColor = '#1f2937';
+      document.body.style.display = 'none';
+      document.body.offsetHeight;
+      document.body.style.display = '';
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.body.style.backgroundColor = '';
+      document.body.style.display = 'none';
+      document.body.offsetHeight;
+      document.body.style.display = '';
+    }
+    
     localStorage.setItem('theme', theme);
     console.log(`Theme set to: ${theme}`);
   }, [theme]);
