@@ -108,38 +108,5 @@ demo-prj/
 3. Use the search bar to find products quickly.
 4. Toggle between light and dark mode using the theme button in the header.
 
-## Troubleshooting
-
-### Elasticsearch Issues
-
-1. **Docker container not starting:**
-   ```bash
-   # Check if the container is running
-   docker ps | grep elasticsearch
-   
-   # If not running, check for errors
-   docker logs elasticsearch
-   
-   # Try with increased memory (Elasticsearch needs at least 2GB of memory)
-   docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" elasticsearch:7.17.0
-   ```
-
-2. **Cannot connect to Elasticsearch:**
-   - Make sure the port 9200 is not being used by another application
-   - Check if your firewall is blocking the connection
-   - Try accessing `http://localhost:9200` directly in your browser
-
-3. **Index related errors:**
-   ```bash
-   # Delete and recreate indices (use with caution, will delete all data)
-   curl -X DELETE "http://localhost:9200/products"
-   ```
-
-### General Issues
-
-1. Ensure all required services are running before starting the application.
-2. Check the backend console for any error messages.
-3. Make sure all dependencies are installed correctly.
-4. Verify that the CORS settings in `backend/config/security.js` are configured properly.
 
 
