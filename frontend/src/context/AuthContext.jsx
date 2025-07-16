@@ -8,13 +8,39 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Verify token validity on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setCurrentUser({ token });
+    if (!token) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+    
+    // Set token in API headers
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    
+    // Set current user with the token we have
+    setCurrentUser({ token });
+    
+    // We'll check if it's valid, but we already set currentUser to prevent flicker
+    const validateToken = async () => {
+      try {
+        // Try to access products as a simple validation request
+        await api.get('/api/auth/products');
+        console.log('Token validated successfully');
+        // Token is valid, currentUser is already set
+      } catch (err) {
+        console.error('Token validation failed:', err);
+        // Token is invalid, remove it
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+        setCurrentUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    validateToken();
   }, []);
 
   const login = async (email, password) => {

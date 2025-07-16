@@ -74,6 +74,9 @@ module.exports = {
     try {
       if (!client) client = initializeClient();
 
+      // Convert to integers to ensure proper calculation
+      page = parseInt(page, 10) || 1;
+      limit = parseInt(limit, 10) || 10;
       const from = (page - 1) * limit;
       
       let searchQuery;
@@ -83,16 +86,38 @@ module.exports = {
       } else {
         searchQuery = {
           bool: {
-            must: [
+            should: [
+              // Match exact prefix (e.g., "phone" matches "phone case")
               {
                 match_phrase_prefix: {
                   name: {
                     query: keyword,
-                    slop: 0 
+                    slop: 0,
+                    boost: 3.0 // Higher boost for exact matches
+                  }
+                }
+              },
+              // Match words containing the keyword (e.g., "phone" matches "smartphone")
+              {
+                wildcard: {
+                  name: {
+                    value: `*${keyword}*`,
+                    boost: 1.0
+                  }
+                }
+              },
+              // Match terms that sound similar
+              {
+                fuzzy: {
+                  name: {
+                    value: keyword,
+                    fuzziness: "AUTO",
+                    boost: 0.5
                   }
                 }
               }
-            ]
+            ],
+            minimum_should_match: 1
           }
         };
       }
@@ -106,15 +131,53 @@ module.exports = {
         }
     });
 
-      const hits = result.body?.hits?.hits.map(hit => hit._source) || [];
+      const hits = result.body?.hits?.hits.map(hit => {
+        // Merge _id with _source for consistent ID handling
+        return { id: hit._id, ...hit._source };
+      }) || [];
+      
       const total = typeof result.body?.hits?.total === 'object'
         ? result.body.hits.total.value
         : result.body?.hits?.total || 0;
-
-      return { results: hits, total };
+      
+      // Calculate pagination metadata
+      const totalPages = Math.ceil(total / limit);
+      
+      return { 
+        results: hits, 
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        } 
+      };
     } catch (error) {
       sails?.log?.error?.('❌ Elasticsearch search error:', error);
-      return { results: [], total: 0, error: error.message };
+      // Provide more descriptive error information for debugging
+      const errorInfo = {
+        message: error.message,
+        stack: process.env.NODE_ENV === 'production' ? undefined : error.stack,
+        code: error.code || 'UNKNOWN_ERROR',
+        statusCode: error.statusCode || 500
+      };
+      
+      sails?.log?.debug?.('Search error details:', errorInfo);
+      
+      return { 
+        results: [], 
+        pagination: {
+          total: 0,
+          page: parseInt(page, 10) || 1,
+          limit: parseInt(limit, 10) || 10,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false
+        },
+        error: errorInfo
+      };
     }
   }
 };

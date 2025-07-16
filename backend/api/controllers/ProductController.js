@@ -50,11 +50,38 @@ module.exports = {
     // Map the name parameter to keyword for searchProducts
     const { name, page, limit } = req.query;
     const keyword = name; // Use the name parameter as the keyword
-    // Skip verbose logging
     
-    const result = await searchProducts.searchProducts({ keyword, page, limit });
+    const result = await searchProducts.searchProducts({ 
+      keyword, 
+      page: parseInt(page, 10) || 1, 
+      limit: parseInt(limit, 10) || 10 
+    });
+    
     return res.json(result);
   },
   
-  
+  // New endpoint specifically for paginated results
+  paginate: async (req, res) => {
+    try {
+      const { keyword, page = 1, limit = 10 } = req.query;
+      
+      // Log the request parameters for debugging
+      sails.log.info('Paginate request:', { keyword, page, limit });
+      
+      const result = await searchProducts.searchProducts({ 
+        keyword, 
+        page: parseInt(page, 10) || 1, 
+        limit: parseInt(limit, 10) || 10 
+      });
+      
+      return res.json(result);
+    } catch (error) {
+      sails.log.error('Error in paginate:', error);
+      return res.status(500).json({ 
+        error: 'Failed to fetch paginated products',
+        message: error.message,
+        stack: process.env.NODE_ENV === 'production' ? undefined : error.stack
+      });
+    }
+  }
 };

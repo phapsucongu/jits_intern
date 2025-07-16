@@ -57,7 +57,13 @@ module.exports = {
     }
   },
 
-  
+  validate: async function (req, res) {
+    // If the request reaches here through the isAuthenticated policy,
+    // the token is valid and we can just return success
+    return res.ok({ 
+      message: 'Token is valid', 
+      user: { id: req.user.id } 
+    });
+  }
 };
-
 

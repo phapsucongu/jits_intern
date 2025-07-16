@@ -4,6 +4,16 @@ import { AuthProvider } from './context/AuthContext';
 import { useEffect } from 'react';
 
 function App() {
+  // Debug navigation events
+  useEffect(() => {
+    const handleNavigationEvent = () => {
+      console.log('Navigation event detected', window.location.pathname, new Date().toISOString());
+    };
+    
+    window.addEventListener('popstate', handleNavigationEvent);
+    return () => window.removeEventListener('popstate', handleNavigationEvent);
+  }, []);
+  
   useEffect(() => {
     const theme = localStorage.getItem('theme') || 'light';
     if (theme === 'dark') {

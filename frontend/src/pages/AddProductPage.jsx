@@ -6,11 +6,12 @@ import ProductForm from '../components/ProductForm';
 export default function AddProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products, addProduct, updateProduct, loading, error } = useProducts();
+  const { products, addProduct, updateProduct, loading } = useProducts();
 
   const [editingProduct, setEditingProduct] = useState(null);
   const [formError, setFormError] = useState(null);
 
+  // Only load product if editing
   useEffect(() => {
     if (id) {
       const prod = products.find(p => p.id.toString() === id);
@@ -22,6 +23,7 @@ export default function AddProductPage() {
     }
   }, [id, products]);
 
+  // Simple direct submit handler with immediate navigation
   const handleSubmit = async (formData) => {
     setFormError(null);
     try {
@@ -30,18 +32,21 @@ export default function AddProductPage() {
       } else {
         await addProduct(formData);
       }
+      
       navigate('/products');
     } catch (err) {
       setFormError(err.message || 'Đã xảy ra lỗi trong quá trình lưu sản phẩm');
     }
   };
 
+  // Simple loading indicator
   if (loading && id) return (
     <div className="flex justify-center items-center h-64 dark:bg-gray-800">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
     </div>
   );
 
+  // Error display when product not found
   if (formError && !editingProduct && id) {
     return (
       <div className="p-6 max-w-md mx-auto dark:bg-gray-800">
@@ -58,6 +63,7 @@ export default function AddProductPage() {
     );
   }
 
+  // Main form render
   return (
     <div className="p-6 max-w-md mx-auto bg-white dark:bg-gray-800 rounded shadow-md">
       <h1 className="text-2xl font-semibold mb-4 dark:text-white">

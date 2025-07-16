@@ -36,12 +36,16 @@ export default function ProductForm({ onSubmit, editingProduct, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    // Validate form
+    if (!validate()) {
+      return;
+    }
 
+    // Set submitting state
     setIsSubmitting(true);
 
+    // Prepare form data
     const priceNumber = parseFloat(price);
-
     const formData = {
       name: name.trim(),
       price: priceNumber,
@@ -49,8 +53,9 @@ export default function ProductForm({ onSubmit, editingProduct, onCancel }) {
         ? editingProduct.image
         : 'https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png',
     };
-
+    
     try {
+      // Submit the form
       if (typeof onSubmit === 'function') {
         if (editingProduct) {
           await onSubmit({ id: editingProduct.id, ...formData });
@@ -59,16 +64,20 @@ export default function ProductForm({ onSubmit, editingProduct, onCancel }) {
         }
       }
 
+      // Reset form after successful submission
       if (!editingProduct) {
         setName('');
         setPrice('');
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      setErrors({ form: error.message || 'An error occurred while saving the product' });
+      setErrors({ 
+        form: error.message || 'An error occurred while saving the product' 
+      });
     } finally {
       setIsSubmitting(false);
     }
+    
+    return true; // Return true on success
   };
 
   return (
@@ -116,29 +125,22 @@ export default function ProductForm({ onSubmit, editingProduct, onCancel }) {
       </div>
 
       <div className="flex space-x-2">
-        {editingProduct && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700"
-          >
-            Cancel
-          </button>
-        )}
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 ${
-            isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-          }`}
+          className="px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          {isSubmitting
-            ? editingProduct
-              ? 'Updating...'
-              : 'Adding...'
-            : editingProduct
-            ? 'Update Product'
-            : 'Add Product'}
+          {isSubmitting 
+            ? (editingProduct ? 'Updating...' : 'Adding...') 
+            : (editingProduct ? 'Update Product' : 'Add Product')}
+        </button>
+        
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700"
+        >
+          Cancel
         </button>
       </div>
     </form>

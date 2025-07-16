@@ -1,32 +1,31 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from './SearchBar';
 
-export default function ProductList({ products, onDelete, onEdit }) {
+export default function ProductList({ 
+    products, 
+    onDelete, 
+    onEdit, 
+    onSearch, 
+    onPageChange, 
+    pagination,
+    loading
+}) {
     const navigate = useNavigate();
     const [isDeleting, setIsDeleting] = useState(null);
-    const [query, setQuery] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 5;
 
-    if (!products || products.length === 0) {
-        return (
-            <div className="text-center py-8">
-                <div className="text-gray-500 dark:text-gray-400">No products available.</div>
-                <button 
-                    onClick={() => navigate('/addproduct')}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                    Add Your First Product
-                </button>
-            </div>
-        );
-    }
+    const noProducts = !products || products.length === 0;
 
-    const handleSearch = useCallback((query) => {
-        setQuery(query);
-        setCurrentPage(1);
-    }, []);
+    const handleSearch = (query) => {
+        if (typeof onSearch === 'function') {
+            onSearch(query);
+        }
+    };
+    
+    // Separate method to handle searching when the search button is clicked
+    const handleSearchSubmit = (query) => {
+        handleSearch(query);
+    };
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
@@ -40,32 +39,42 @@ export default function ProductList({ products, onDelete, onEdit }) {
             }
         }
     };
-
-    const items = useMemo(() => {
-        const q = query.trim().toLowerCase();
-        if (q === '') return products;
-        return products.filter(p =>
-            p.name.toLowerCase().includes(q)
-        );
-    }, [products, query]);
-
-    const totalPages = Math.ceil(items.length / pageSize);
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedItems = items.slice(startIndex, endIndex);
+    
+    // Get pagination data from props or use defaults
+    const currentPage = pagination?.page || 1;
+    const totalPages = pagination?.totalPages || 1;
 
     return (
         <div className="space-y-4">
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar onSearch={handleSearchSubmit} />
             
-            {items.length === 0 && query && (
-                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                    No products found matching "{query}".
+            {noProducts && !loading && (
+                <div className="text-center py-8">
+                    <div className="text-gray-500 dark:text-gray-400">No products available.</div>
+                    <button 
+                        onClick={() => navigate('/addproduct')}
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                        Add Your Product
+                    </button>
                 </div>
             )}
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginatedItems.map((product) => (
+            {!noProducts && products.length === 0 && !loading && (
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                    No products found. Try a different search term or add new products.
+                </div>
+            )}
+            
+            {loading && (
+                <div className="flex justify-center py-6">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                </div>
+            )}
+            
+            {!noProducts && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((product) => (
                     <div
                         key={product.id}
                         className="border border-gray-200 rounded-lg shadow hover:shadow-md transition dark:border-gray-700 dark:bg-gray-800"
@@ -103,16 +112,17 @@ export default function ProductList({ products, onDelete, onEdit }) {
                         </div>
                     </div>
                 ))}
-            </div>
+                </div>
+            )}
             
-            {items.length > pageSize && (
+            {!noProducts && totalPages > 1 && (
                 <div className="flex justify-center mt-8">
                     <nav className="flex space-x-2">
                         <button
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
+                            onClick={() => onPageChange && onPageChange(currentPage - 1)}
+                            disabled={currentPage === 1 || loading}
                             className={`px-3 py-1 rounded ${
-                                currentPage === 1
+                                currentPage === 1 || loading
                                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
                                 : 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200'
                             }`}
@@ -120,25 +130,48 @@ export default function ProductList({ products, onDelete, onEdit }) {
                             &laquo; Prev
                         </button>
                         
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => setCurrentPage(index + 1)}
-                                className={`px-3 py-1 rounded ${
-                                    currentPage === index + 1
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300'
-                                }`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
+                        {/* Show a limited number of page buttons */}
+                        {Array.from(
+                            { length: Math.min(5, totalPages) }, 
+                            (_, i) => {
+                                // Calculate which page numbers to show
+                                let pageNum;
+                                if (totalPages <= 5) {
+                                    // If 5 or fewer pages, show all
+                                    pageNum = i + 1;
+                                } else if (currentPage <= 3) {
+                                    // Near the start
+                                    pageNum = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                    // Near the end
+                                    pageNum = totalPages - 4 + i;
+                                } else {
+                                    // In the middle
+                                    pageNum = currentPage - 2 + i;
+                                }
+                                
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => onPageChange && onPageChange(pageNum)}
+                                        disabled={loading}
+                                        className={`px-3 py-1 rounded ${
+                                            currentPage === pageNum
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            }
+                        )}
                         
                         <button
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
+                            onClick={() => onPageChange && onPageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages || loading}
                             className={`px-3 py-1 rounded ${
-                                currentPage === totalPages
+                                currentPage === totalPages || loading
                                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
                                 : 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200'
                             }`}
@@ -146,6 +179,13 @@ export default function ProductList({ products, onDelete, onEdit }) {
                             Next &raquo;
                         </button>
                     </nav>
+                </div>
+            )}
+            
+            {/* Show pagination info */}
+            {pagination && pagination.total > 0 && (
+                <div className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Showing page {currentPage} of {totalPages} ({pagination.total} total items)
                 </div>
             )}
         </div>

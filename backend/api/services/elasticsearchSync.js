@@ -22,8 +22,7 @@ const initializeClient = () => {
       apiVersion: '7.x',
       compatibility: '7'
     });
-    
-    // Log only essential information
+
     return client;
   } catch (error) {
     sails.log.error('❌ Failed to create Elasticsearch sync client:', error);
@@ -31,9 +30,6 @@ const initializeClient = () => {
   }
 };
 
-/**
- * Process the sync queue
- */
 const processQueue = async () => {
   if (processingQueue || syncQueue.length === 0) return;
   
@@ -69,24 +65,19 @@ const processQueue = async () => {
     }
   } catch (error) {
     sails.log.error('Error processing Elasticsearch sync queue:', error);
-    // Put failed operation back in the queue
     if (syncQueue.length > 0) {
       syncQueue.unshift(syncQueue[0]);
     }
     scheduleRetry();
   } finally {
     processingQueue = false;
-    
-    // Continue processing if there are more items
+
     if (syncQueue.length > 0) {
       setTimeout(processQueue, 100);
     }
   }
 };
 
-/**
- * Check if Elasticsearch is available
- */
 const checkElasticsearchAvailability = async () => {
   try {
     const result = await client.ping();
@@ -97,23 +88,16 @@ const checkElasticsearchAvailability = async () => {
   }
 };
 
-/**
- * Schedule a retry after failure
- */
 const scheduleRetry = () => {
   if (retryTimeout) clearTimeout(retryTimeout);
-  
-  // Retry after 30 seconds
+
   retryTimeout = setTimeout(() => {
     sails.log.info('Retrying Elasticsearch sync...');
     processQueue();
   }, 30000);
-};  /**
-   * Index a document in Elasticsearch
-   */
+};  
   const indexDocument = async (model, data) => {
     try {
-      // Only process Product model
       if (model !== 'Product') {
         sails.log.warn(`Skipping indexing for non-Product model: ${model}`);
         return;
@@ -121,11 +105,9 @@ const scheduleRetry = () => {
       
       const indexName = 'products';
       
-      // Check if index exists, create if not
       const indexExists = await client.indices.exists({ index: indexName });
       
       if (!indexExists.body) {
-        // Create index with Product mappings and custom analyzer
         const mappings = {
           settings: {
             analysis: {
@@ -146,7 +128,7 @@ const scheduleRetry = () => {
                 search_analyzer: "product_analyzer"
               },
               price: { type: 'float' },
-              image: { type: 'text', index: false }, // Don't index the image URL for search
+              image: { type: 'text', index: false }, 
               createdAt: { type: 'date' },
               updatedAt: { type: 'date' },
             }
@@ -161,7 +143,6 @@ const scheduleRetry = () => {
         sails.log.info(`✅ Created index: ${indexName}`);
       }
       
-      // Index the document
       await client.index({
         index: indexName,
         id: data.id,
@@ -174,12 +155,9 @@ const scheduleRetry = () => {
       sails.log.error(`❌ Error indexing Product:`, error);
       throw error;
     }
-  };  /**
-   * Delete a document from Elasticsearch
-   */
+  };  
   const deleteDocument = async (model, id) => {
     try {
-      // Only process Product model
       if (model !== 'Product') {
         sails.log.warn(`Skipping deletion for non-Product model: ${model}`);
         return;
@@ -207,31 +185,20 @@ const scheduleRetry = () => {
   };
 
 module.exports = {
-  /**
-   * Initialize the service
-   */
+
   initialize: async function() {
     client = initializeClient();
     
-    // Process any queued operations that might have accumulated
-    // during system startup
     processQueue();
   },
   
-  /**
-   * Add an item to the sync queue
-   */
   queueOperation: function(operation, model, data) {
     syncQueue.push({ operation, model, data });
     processQueue();
   },
   
-  /**
-   * Sync all products
-   */
   syncAll: async function(model) {
     try {
-      // Only allow syncing Products
       if (model !== 'Product') {
         sails.log.warn(`Syncing non-Product models is not supported. Requested: ${model}`);
         return { success: false, error: 'Only Product model is supported for syncing' };
@@ -257,100 +224,4 @@ module.exports = {
     }
   },
   
-  /**
-   * Check sync status
-   */
-  getStatus: function() {
-    return {
-      queueLength: syncQueue.length,
-      processingQueue,
-      elasticsearchAvailable: client && !client.isClosed()
-    };
-  },
-  
-  /**
-   * Reset sync service
-   */
-  reset: function() {
-    syncQueue = [];
-    if (retryTimeout) clearTimeout(retryTimeout);
-    processingQueue = false;
-    
-    if (client && !client.isClosed()) {
-      client.close();
-    }
-    
-    client = initializeClient();
-  },
-  
-  /**
-   * Rebuild the Elasticsearch index from scratch
-   */
-  rebuildIndex: async function() {
-    try {
-      // Delete the index if it exists
-      const indexExists = await client.indices.exists({ index: 'products' });
-      
-      if (indexExists.body) {
-        sails.log.info('Deleting existing products index...');
-        await client.indices.delete({ index: 'products' });
-      }
-      
-      // Create the index with proper mappings
-      sails.log.info('Creating new products index with proper mappings...');
-      
-      const indexSettings = {
-        settings: {
-          analysis: {
-            analyzer: {
-              product_analyzer: {
-                type: "custom",
-                tokenizer: "standard",
-                filter: ["lowercase"]
-              }
-            }
-          }
-        },
-        mappings: {
-          properties: {
-            name: { 
-              type: 'text',
-              analyzer: "product_analyzer",
-              search_analyzer: "product_analyzer" 
-            },
-            price: { type: 'float' },
-            image: { type: 'text', index: false },
-            createdAt: { type: 'date' },
-            updatedAt: { type: 'date' },
-          }
-        }
-      };
-      
-      await client.indices.create({
-        index: 'products',
-        body: indexSettings
-      });
-      
-      sails.log.info('Products index created successfully');
-      
-      // Reindex all products
-      const products = await sails.models.product.find();
-      sails.log.info(`Reindexing ${products.length} products...`);
-      
-      for (const product of products) {
-        await client.index({
-          index: 'products',
-          id: product.id,
-          body: product,
-          refresh: true
-        });
-      }
-      
-      sails.log.info('All products have been reindexed successfully');
-      return { success: true, count: products.length };
-    } catch (error) {
-      sails.log.error('Error rebuilding index:', error);
-      return { success: false, error: error.message };
-    }
-  }
 };

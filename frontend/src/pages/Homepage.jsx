@@ -17,15 +17,6 @@ export default function HomePage() {
                 <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
                     A simple content management system for product management.
                 </p>
-                
-                <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-                    <p className="text-blue-800 dark:text-blue-300">
-                        {error 
-                            ? "Server status: Error connecting to server" 
-                            : `Server status: ${data?.message || "Online"}`
-                        }
-                    </p>
-                </div>
             </div>
 
             {!isAuthenticated ? (

@@ -38,6 +38,23 @@ module.exports.routes = {
     controller: 'ProductController',
     action: 'search',
   },
+  
+  'GET /api/paginate/products': {
+    controller: 'ProductController',
+    action: 'paginate',
+  },
+  
+  'GET /api/auth/paginate/products': {
+    controller: 'ProductController',
+    action: 'paginate',
+    policy: 'isAuthenticated'
+  },
+  
+  'GET /api/auth/validate': {
+    controller: 'UsersController',
+    action: 'validate',
+    policy: 'isAuthenticated'
+  },
   // 'GET /api/sync/status': 'SyncController.getStatus',
   // 'POST /api/sync/products': 'SyncController.syncProducts',
   // 'POST /api/sync/all': 'SyncController.syncAll',
