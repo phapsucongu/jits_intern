@@ -3,9 +3,6 @@ module.exports.routes = {
 
   // Default homepage
   '/': { view: 'pages/homepage' },
-  
-  // We're keeping only the authenticated API routes for products
-  // The non-authenticated routes have been removed
 
   'POST /api/register': 'UsersController.register',
   'POST /api/login': 'UsersController.login',
