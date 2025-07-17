@@ -11,34 +11,23 @@
 
 module.exports.bootstrap = async function() {
 
+  // Initialize search products if elasticsearch is available
   try {
-    sails.log.info('Initializing searchProducts service...');
-    const searchProducts = require('../api/services/searchProducts');
-    if (searchProducts.initialize) {
-      await searchProducts.initialize();
-      sails.log.info('searchProducts service initialized successfully');
+    const fs = require('fs');
+    // Check if the search service file exists
+    if (fs.existsSync(require('path').join(__dirname, '../api/services/searchProducts.js'))) {
+      sails.log.info('Initializing searchProducts service...');
+      const searchProducts = require('../api/services/searchProducts');
+      if (searchProducts.initialize) {
+        await searchProducts.initialize();
+        sails.log.info('searchProducts service initialized successfully');
+      }
+    } else {
+      sails.log.info('Search products service not found, skipping initialization');
     }
   } catch (error) {
     sails.log.error('Failed to initialize searchProducts service:', error);
-  }
-  try {
-    sails.log.info('Initializing elasticsearchSync service for Products...');
-    const elasticsearchSync = require('../api/services/elasticsearchSync');
-    if (elasticsearchSync.initialize) {
-      await elasticsearchSync.initialize();
-      sails.log.info('elasticsearchSync service initialized successfully');
-      
-      setTimeout(async () => {
-        try {
-          sails.log.info('Performing initial sync of all products...');
-          await elasticsearchSync.syncAll('Product');
-        } catch (err) {
-          sails.log.error('Initial product sync failed:', err);
-        }
-      }, 5000);
-    }
-  } catch (error) {
-    sails.log.error('Failed to initialize elasticsearchSync service:', error);
+    sails.log.info('Search functionality will not be available');
   }
   
   // Initialize RBAC system

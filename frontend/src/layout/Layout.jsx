@@ -3,7 +3,7 @@ import useTheme from "../hooks/useTheme";
 import useLastVisit from "../hooks/useLastVisit";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Permission } from "../components/RBACComponents";
+import { Permission } from "../components/RBAC";
 
 export const Layout = () => {
     const { theme, toggleTheme } = useTheme();

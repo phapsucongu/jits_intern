@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProduct';
 import ProductList from '../components/ProductList';
-import { Permission } from '../components/RBACComponents';
+import { Permission } from '../components/RBAC';
 
 export default function ProductPage() {
   const navigate = useNavigate();

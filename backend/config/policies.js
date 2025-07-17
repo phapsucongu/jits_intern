@@ -60,8 +60,4 @@ module.exports.policies = {
     // Only allow Admin role to manage permissions directly
     '*': ['isAuthenticated', checkRole('Admin')]
   },
-  
-  'SyncController': {
-    '*': 'isAuthenticated'
-  },
 };

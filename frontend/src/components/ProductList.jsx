@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from './SearchBar';
-import { Permission } from './RBACComponents';
+import { Permission } from './RBAC';
 
 export default function ProductList({ 
     products, 

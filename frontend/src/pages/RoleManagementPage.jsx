@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../instance/api';
 import { useAuth } from '../context/AuthContext';
-import { Permission } from '../components/RBACComponents';
+import { Permission } from '../components/RBAC';
 
 export default function RoleManagementPage() {
   const [roles, setRoles] = useState([]);
