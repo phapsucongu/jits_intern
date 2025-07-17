@@ -1,39 +1,3 @@
-GET http://localhost:1337/api/ping
-Content-Type: application/json
-
-
-#########
-
-POST http://localhost:1337/products
-Content-Type: application/json
-
-{
-  "name": "ABC TV",
-  "price": 199.99,
-  "image": "https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png"
-}
-
-#########
-
-GET http://localhost:1337/products
-Content-Type: application/json
-
-#########
-
-GET http://localhost:1337/products
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNTU5NiwiZXhwIjoxNzUyMTA5MTk2fQ.AXfPctR8Q_t4jtQMRgHA12sfJfVar89lmx9x5we1knY
-
-
-#########
-PUT http://localhost:1337/products/6865c5056e0be378d7632507
-Content-Type: application/json
-
-{
-  "name": "Smart TV",
-  "price": 299.99,
-  "image": "https://png.pngtree.com/png-vector/20230408/ourmid/pngtree-led-tv-television-screen-vector-png-image_6673700.png"
-}
 
 
 #########
@@ -65,24 +29,30 @@ POST http://localhost:1337/api/login
 Content-Type: application/json
 
 {
-  "email": "admin@gmail.com",
+  "email": "sadmin@gmail.com",
   "password": "123456"
 }
 
 #########
 
-GET http://localhost:1337/api/search/products?name=TV
+
+POST  http://localhost:1337/api/auth/dynamic-models
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNzI2MSwiZXhwIjoxNzUyMTEwODYxfQ.tHWiTsnyZWX--6VTULYLqAoW5tpMsXEEuf9zgmzaILo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Nzg4OTBiMGFjMTczZTAyOTg1NDdiZCIsImlhdCI6MTc1MjczMDA0NSwiZXhwIjoxNzUyNzczMjQ1fQ.tmsQymQeUUxUGt0QIRJEaTb9xe2N_Q90KibtaRGFQCw
+
+{"name":"test","displayName":"test","fields":[{"name":"n","type":"string","required":false}]}
 
 #########
 
-GET http://localhost:1337/api/search/products?name=Smart
+POST http://localhost:1337/api/auth/dynamic-data/Test
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjEwNzI2MSwiZXhwIjoxNzUyMTEwODYxfQ.tHWiTsnyZWX--6VTULYLqAoW5tpMsXEEuf9zgmzaILo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Nzg4OTBiMGFjMTczZTAyOTg1NDdiZCIsImlhdCI6MTc1MjczMDA0NSwiZXhwIjoxNzUyNzczMjQ1fQ.tmsQymQeUUxUGt0QIRJEaTb9xe2N_Q90KibtaRGFQCw
+
+{"data": {"n": "sample value"}}
 
 #########
 
-GET http://localhost:1337/api/auth/products
+# Get dynamic data
+GET http://localhost:1337/api/auth/dynamic-data/Test
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NmYwMjZmMTFiYTlhMTM4NmUzMTkzMSIsImlhdCI6MTc1MjE5NTcyNywiZXhwIjoxNzUyMTk5MzI3fQ.zi2K3iEPCoXhR_C4VqydHwol9EsqxHpZwhuN-K8WGs0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Nzg4OTBiMGFjMTczZTAyOTg1NDdiZCIsImlhdCI6MTc1MjczMDA0NSwiZXhwIjoxNzUyNzczMjQ1fQ.tmsQymQeUUxUGt0QIRJEaTb9xe2N_Q90KibtaRGFQCw

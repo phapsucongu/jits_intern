@@ -49,7 +49,7 @@ module.exports = {
         return res.serverError({ error: 'Authentication configuration error' });
       }
 
-      const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
+      const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '12h' });
       return res.ok({ message: 'Login successful.', token });
     } catch (error) {
       sails.log.error('Login error:', error);

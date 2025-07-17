@@ -6,6 +6,10 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import RoleManagementPage from '../pages/RoleManagementPage';
 import UserManagementPage from '../pages/UserManagementPage';
+import DynamicModelManagementPage from '../pages/DynamicModelManagementPage';
+import CreateDynamicModelPage from '../pages/CreateDynamicModelPage';
+import DynamicDataPage from '../pages/DynamicDataPage';
+import ManageDynamicDataPage from '../pages/ManageDynamicDataPage';
 import { useAuth } from '../context/AuthContext';
 
 // Protected route that checks if user is authenticated
@@ -81,6 +85,50 @@ export const Routers = () => {
           <PermissionRoute resource="user" action="view">
             <UserManagementPage />
           </PermissionRoute>
+        } 
+      />
+      
+      {/* Dynamic Model Management Routes */}
+      <Route 
+        path="/admin/models" 
+        element={
+          <ProtectedRoute>
+            <DynamicModelManagementPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/models/create" 
+        element={
+          <PermissionRoute resource="role" action="manage">
+            <CreateDynamicModelPage />
+          </PermissionRoute>
+        } 
+      />
+      
+      {/* Dynamic Data Routes */}
+      <Route 
+        path="/:modelName" 
+        element={
+          <ProtectedRoute>
+            <DynamicDataPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/add/:modelName" 
+        element={
+          <ProtectedRoute>
+            <ManageDynamicDataPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/edit/:modelName/:id" 
+        element={
+          <ProtectedRoute>
+            <ManageDynamicDataPage />
+          </ProtectedRoute>
         } 
       />
     </Routes>

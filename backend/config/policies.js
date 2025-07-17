@@ -60,4 +60,23 @@ module.exports.policies = {
     // Only allow Admin role to manage permissions directly
     '*': ['isAuthenticated', checkRole('Admin')]
   },
+  
+  'DynamicModelController': {
+    // Allow read access with authentication, but creation/modification only for admins
+    'find': 'isAuthenticated',
+    'findOne': 'isAuthenticated',
+    'create': ['isAuthenticated', checkRole('Admin')],
+    'update': ['isAuthenticated', checkRole('Admin')],
+    'delete': ['isAuthenticated', checkRole('Admin')]
+  },
+  
+  'DynamicDataController': {
+    // Set basic permissions for dynamic data
+    'find': 'isAuthenticated',
+    'findOne': 'isAuthenticated',
+    'create': 'isAuthenticated',
+    'update': 'isAuthenticated',
+    'destroy': 'isAuthenticated'
+    // The controller will handle more specific permissions internally
+  },
 };

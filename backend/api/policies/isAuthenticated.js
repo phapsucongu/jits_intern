@@ -29,7 +29,8 @@ module.exports = async function (req, res, proceed) {
     }
     
     // Set the full user object for this request
-    req.user = decoded;
+    // Always fully populate the user with roles
+    req.user = await User.findOne({ id: userId }).populate('roles');
     req.userId = userId; // Add userId for easier access
     
     return proceed();

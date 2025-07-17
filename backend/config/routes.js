@@ -168,13 +168,68 @@ module.exports.routes = {
     policy: 'isAuthenticated',
     permission: { resource: 'user', action: 'manage' }
   },
+  
+  // Dynamic Model routes
+  'GET /api/auth/dynamic-models': {
+    controller: 'DynamicModelController',
+    action: 'find',
+    policy: 'isAuthenticated'
+  },
+  'GET /api/auth/dynamic-models/:id': {
+    controller: 'DynamicModelController',
+    action: 'findOne',
+    policy: 'isAuthenticated'
+  },
+  'POST /api/auth/dynamic-models': {
+    controller: 'DynamicModelController',
+    action: 'create',
+    policy: 'isAuthenticated'
+  },
+  'PUT /api/auth/dynamic-models/:id': {
+    controller: 'DynamicModelController',
+    action: 'update',
+    policy: 'isAuthenticated',
+    permission: { resource: 'dynamic-model', action: 'edit' }
+  },
+  'DELETE /api/auth/dynamic-models/:id': {
+    controller: 'DynamicModelController',
+    action: 'delete',
+    policy: 'isAuthenticated',
+    permission: { resource: 'dynamic-model', action: 'delete' }
+  },
+  
+  // Dynamic Data routes
+  'GET /api/auth/dynamic-data/:model': {
+    controller: 'DynamicDataController',
+    action: 'find',
+    policy: 'isAuthenticated'
+  },
+  'GET /api/auth/dynamic-data/:model/:id': {
+    controller: 'DynamicDataController',
+    action: 'findOne',
+    policy: 'isAuthenticated'
+  },
+  'POST /api/auth/dynamic-data/:model': {
+    controller: 'DynamicDataController',
+    action: 'create',
+    policy: 'isAuthenticated'
+  },
+  'PUT /api/auth/dynamic-data/:model/:id': {
+    controller: 'DynamicDataController',
+    action: 'update',
+    policy: 'isAuthenticated'
+  },
+  'DELETE /api/auth/dynamic-data/:model/:id': {
+    controller: 'DynamicDataController',
+    action: 'destroy',
+    policy: 'isAuthenticated'
+  },
   'GET /api/auth/users/:id/permissions': {
     controller: 'UsersController',
     action: 'getPermissions',
     policy: 'isAuthenticated',
     permission: { resource: 'user', action: 'view' }
   },
-  // Self-permissions endpoint - users can always see their own permissions
   'GET /api/auth/my/permissions': {
     controller: 'UsersController',
     action: 'getPermissions',

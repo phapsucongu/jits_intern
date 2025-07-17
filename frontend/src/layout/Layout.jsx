@@ -4,12 +4,14 @@ import useLastVisit from "../hooks/useLastVisit";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Permission } from "../components/RBAC";
+import { useDynamicModels } from "../hooks/useDynamicModel";
 
 export const Layout = () => {
     const { theme, toggleTheme } = useTheme();
     const lastVisit = useLastVisit();
-    const { currentUser, logout, isAuthenticated, userRoles } = useAuth();
+    const { currentUser, logout, isAuthenticated, userRoles, hasPermission } = useAuth();
     const navigate = useNavigate();
+    const { models, loading: loadingModels } = useDynamicModels();
     
     const handleLogout = () => {
         logout();
@@ -99,6 +101,32 @@ export const Layout = () => {
                             </Link>
                         </div>
                     </Permission>
+                    
+                    <Permission resource="role" action="manage">
+                        <div className="px-3 py-1 mt-1">
+                            <Link to="/admin/models" className="block px-3 py-2 rounded hover:bg-gray-700">
+                                Dynamic Models
+                            </Link>
+                        </div>
+                    </Permission>
+                    
+                    {/* Dynamic Models Navigation */}
+                    {models && models.length > 0 && (
+                        <div className="mt-6">
+                            <div className="px-3 py-1 text-xs text-gray-400 uppercase font-bold">Dynamic Models</div>
+                            {models.map((model) => (
+                                hasPermission(model.name.toLowerCase(), 'view') && (
+                                    <Link 
+                                        key={model.id} 
+                                        to={`/${model.name.toLowerCase()}`} 
+                                        className="block px-3 py-2 rounded hover:bg-gray-700"
+                                    >
+                                        {model.displayName}
+                                    </Link>
+                                )
+                            ))}
+                        </div>
+                    )}
                 </nav>
                 </aside>
             )}

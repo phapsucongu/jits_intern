@@ -170,6 +170,11 @@ export const AuthProvider = ({ children }) => {
       role.name.toLowerCase() === roleName.toLowerCase()
     );
   };
+  
+  // Check if user is an admin
+  const isAdmin = () => {
+    return hasRole('Admin');
+  };
 
   const value = {
     currentUser,
@@ -182,6 +187,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     hasPermission,
     hasRole,
+    isAdmin,
     isAuthenticated: !!currentUser,
   };
 

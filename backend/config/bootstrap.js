@@ -38,6 +38,27 @@ module.exports.bootstrap = async function() {
     const PermissionController = require('../api/controllers/PermissionController');
     await PermissionController.initializeDefaultPermissions();
     
+    // Create dynamic-model permissions
+    await Permission.findOrCreate(
+      { resource: 'dynamic-model', action: 'create' },
+      { resource: 'dynamic-model', action: 'create', description: 'Create new dynamic models' }
+    );
+    
+    await Permission.findOrCreate(
+      { resource: 'dynamic-model', action: 'edit' },
+      { resource: 'dynamic-model', action: 'edit', description: 'Edit existing dynamic models' }
+    );
+    
+    await Permission.findOrCreate(
+      { resource: 'dynamic-model', action: 'delete' },
+      { resource: 'dynamic-model', action: 'delete', description: 'Delete dynamic models' }
+    );
+    
+    await Permission.findOrCreate(
+      { resource: 'dynamic-model', action: 'view' },
+      { resource: 'dynamic-model', action: 'view', description: 'View dynamic models' }
+    );
+    
     // Create default roles
     const adminRole = await Role.findOrCreate(
       { name: 'Admin' },
