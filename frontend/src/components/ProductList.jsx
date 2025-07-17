@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from './SearchBar';
+import { Permission } from './RBACComponents';
 
 export default function ProductList({ 
     products, 
@@ -93,21 +94,26 @@ export default function ProductList({
                                 Price: ${parseFloat(product.price).toFixed(2)}
                             </p>
                             <div className="mt-4 flex space-x-2">
-                                <button
-                                    onClick={() => navigate(`/addproduct/${product.id}`)}
-                                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(product.id)}
-                                    disabled={isDeleting === product.id}
-                                    className={`px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 ${
-                                        isDeleting === product.id ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
-                                >
-                                    {isDeleting === product.id ? 'Deleting...' : 'Delete'}
-                                </button>
+                                <Permission resource="product" action="edit" fallback={null}>
+                                    <button
+                                        onClick={() => navigate(`/addproduct/${product.id}`)}
+                                        className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                    >
+                                        Edit
+                                    </button>
+                                </Permission>
+                                
+                                <Permission resource="product" action="delete" fallback={null}>
+                                    <button
+                                        onClick={() => handleDelete(product.id)}
+                                        disabled={isDeleting === product.id}
+                                        className={`px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 ${
+                                            isDeleting === product.id ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
+                                    >
+                                        {isDeleting === product.id ? 'Deleting...' : 'Delete'}
+                                    </button>
+                                </Permission>
                             </div>
                         </div>
                     </div>

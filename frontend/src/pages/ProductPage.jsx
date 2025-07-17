@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProduct';
 import ProductList from '../components/ProductList';
+import { Permission } from '../components/RBACComponents';
 
 export default function ProductPage() {
   const navigate = useNavigate();
@@ -42,13 +43,15 @@ export default function ProductPage() {
   return (
     <div id="product-page" className="p-6 space-y-6 min-h-full bg-white dark:bg-gray-800 dark:text-white">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold dark:text-white">Danh sách sản phẩm</h1>
-        <Link
-          to="/addproduct"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          ADD
-        </Link>
+        <h1 className="text-2xl font-semibold dark:text-white">Product List</h1>
+        <Permission resource="product" action="create">
+          <Link
+            to="/addproduct"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Add Product
+          </Link>
+        </Permission>
       </div>
 
       <ProductList

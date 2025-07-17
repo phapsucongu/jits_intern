@@ -8,7 +8,13 @@
  * https://sailsjs.com/docs/concepts/policies
  */
 
-const { search } = require("../api/controllers/ProductController");
+// Helper function to create permission policy
+const checkPermission = (resource, action) => 
+  (req, res, next) => require('../api/policies/checkPermission')(resource, action)(req, res, next);
+
+// Helper function to create role policy
+const checkRole = (role) => 
+  (req, res, next) => require('../api/policies/checkRole')(role)(req, res, next);
 
 module.exports.policies = {
 
@@ -20,13 +26,39 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
+  
+  // Authentication endpoints don't need permission checks
+  'UsersController': {
+    'register': true,
+    'login': true,
+    'validate': 'isAuthenticated',
+    
+    // User management operations require appropriate permissions
+    'find': ['isAuthenticated', checkPermission('user', 'view')],
+    'findOne': ['isAuthenticated', checkPermission('user', 'view')],
+    'update': ['isAuthenticated', checkPermission('user', 'edit')],
+    'destroy': ['isAuthenticated', checkPermission('user', 'delete')]
+  },
+  
   'ProductController': {
-    find: 'isAuthenticated',
-    findOne: 'isAuthenticated',
-    create: 'isAuthenticated',
-    update: 'isAuthenticated',
-    destroy: 'isAuthenticated',
-    search: 'isAuthenticated',
+    // Apply both isAuthenticated policy and permission check for all product operations
+    'find': 'isAuthenticated',
+    'findOne': 'isAuthenticated',
+    'search': 'isAuthenticated',
+    'paginate': 'isAuthenticated',
+    'create': ['isAuthenticated', checkPermission('product', 'create')],
+    'update': ['isAuthenticated', checkPermission('product', 'edit')],
+    'destroy': ['isAuthenticated', checkPermission('product', 'delete')]
+  },
+  
+  'RoleController': {
+    // Two options for accessing role management: either having the 'role:manage' permission or being an Admin
+    '*': ['isAuthenticated', checkPermission('role', 'manage')]
+  },
+  
+  'PermissionController': {
+    // Only allow Admin role to manage permissions directly
+    '*': ['isAuthenticated', checkRole('Admin')]
   },
   
   'SyncController': {

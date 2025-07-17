@@ -3,11 +3,12 @@ import useTheme from "../hooks/useTheme";
 import useLastVisit from "../hooks/useLastVisit";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Permission } from "../components/RBACComponents";
 
 export const Layout = () => {
     const { theme, toggleTheme } = useTheme();
     const lastVisit = useLastVisit();
-    const { currentUser, logout, isAuthenticated } = useAuth();
+    const { currentUser, logout, isAuthenticated, userRoles } = useAuth();
     const navigate = useNavigate();
     
     const handleLogout = () => {
@@ -31,12 +32,23 @@ export const Layout = () => {
             <h1 className="text-xl py-3">My CMS</h1>
             <div className="flex items-center space-x-4">
                 {isAuthenticated ? (
-                    <button
-                        onClick={handleLogout}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                        Logout
-                    </button>
+                    <div className="flex items-center space-x-4">
+                        <div className="text-sm">
+                            <span className="opacity-70">Welcome, </span>
+                            <span>{currentUser?.firstName || currentUser?.email?.split('@')[0]}</span>
+                            {userRoles?.length > 0 && (
+                                <span className="ml-2 bg-blue-800 px-2 py-1 rounded-full text-xs">
+                                    {userRoles[0]?.name}
+                                </span>
+                            )}
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                            Logout
+                        </button>
+                    </div>
                 ) : (
                     <div className="flex space-x-2">
                         <Link to="/login" className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">
@@ -58,10 +70,35 @@ export const Layout = () => {
 
         <div className="flex flex-1">
             {isAuthenticated && (
-                <aside className="bg-gray-800 text-gray-200 p-4 ">
+                <aside className="bg-gray-800 text-gray-200 p-4 w-56">
                 <nav className="space-y-2">
+                    {/* Always visible links */}
                     <Link to="/" className="block px-3 py-2 rounded hover:bg-gray-700">Home</Link>
-                    <Link to="/products" className="block px-3 py-2 rounded hover:bg-gray-700">Products</Link>
+                    
+                    {/* Product links - requires view permission */}
+                    <Permission resource="product" action="view">
+                        <Link to="/products" className="block px-3 py-2 rounded hover:bg-gray-700">
+                            Products
+                        </Link>
+                    </Permission>
+                    
+                    {/* Admin section - requires appropriate permissions */}
+                    <Permission resource="role" action="view">
+                        <div className="mt-6">
+                            <div className="px-3 py-1 text-xs text-gray-400 uppercase font-bold">Admin</div>
+                            <Link to="/admin/roles" className="block px-3 py-2 rounded hover:bg-gray-700">
+                                Role Management
+                            </Link>
+                        </div>
+                    </Permission>
+                    
+                    <Permission resource="user" action="view">
+                        <div className="px-3 py-1 mt-1">
+                            <Link to="/admin/users" className="block px-3 py-2 rounded hover:bg-gray-700">
+                                User Management
+                            </Link>
+                        </div>
+                    </Permission>
                 </nav>
                 </aside>
             )}
